@@ -1,0 +1,21 @@
+﻿@using Practica01.Models
+@model Practica01.Models.Person
+
+@{
+    ViewData["Title"] = "LeerArchivo";
+}
+
+
+<div class="banner">
+    <div class="container">
+        <div class="col-md-12 text-center contenido">
+            <h1 class="black">Cargar CSV</h1>
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <h1 class="black">Cargar los datos por medio de CSV</h1>
+    <form asp-area="" asp-controller="Person" asp-action="LeerArchivo" method="post" enctype="multipart/form-data">
+        <input type="submit" value="Import" />
+    </form>
+</div>

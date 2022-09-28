@@ -1,0 +1,23 @@
+﻿@using Classlibrary
+@model Practica01.Models.Person
+
+@{
+    ViewData["Title"] = "codificacion";
+}
+
+<h1>Búsqueda</h1>
+
+<h4>Encontrar persona por empresa</h4>
+
+<form asp-action="EncontrarDPICodificado" method="post">
+    <div class="input-group input-group-lg">
+        <input type="type" name="encodeData" value="" />
+        <button class="btn btn-outline-info">Encontrar por DPI codificados</button>
+    </div>
+</form>
+<form asp-action="EncontrarDPIDecodificado" method="post">
+    <div class="input-group input-group-lg">
+        <input type="type" name="decodeData" value="" />
+        <button class="btn btn-outline-info pe-auto">Encontrar por DPI Decodificados</button>
+    </div>
+</form>
