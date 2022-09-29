@@ -5,10 +5,10 @@
     ViewData["Title"] = "Search";
 }
 
-<h1>Resultados de la búsqueda por dpi</h1>
+<h1>Cartas disponibles del recluta buscado</h1>
 
 
-@if (Model.SearchTree.Count != 0)
+@if (Model.CartList.Count != 0)
 {
     <table class="table table-dark table-hover">
         <thead>
@@ -16,35 +16,23 @@
                 <th>
                     Name
                 </th>
-                <th>
-                    Companies
-                </th>
-                <th>
-                    Datebirth
-                </th>
-                <th>
-                    Address
-                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.SearchTree)
+            @foreach (var item in Model.CartList)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.companies)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.datebirth)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.address)
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item)
+                </td>
+                <td>
+                    @Html.ActionLink("Encode", "Encode", new { Recruit = item })
+                </td>
+                <td>
+                    @Html.ActionLink("Decode", "Decode", new { Recruit = item })
+                </td>
+            </tr>
             }
         </tbody>
     </table>
@@ -52,10 +40,10 @@
 else
 {
     <div style="text-align:center">
-        <label>No hay algún registro con este nombre y dpi</label>
+        <label>No hay algún registro de cartas de recomendación con este dpi</label>
         <br>
     </div>
 }
 <div>
-    <a asp-action="Index">Regresar al menú</a>
+    <a asp-action="Index">Regresar a la lista de reclutas</a>
 </div>

@@ -10,6 +10,7 @@ namespace Classlibrary
     {
         public Node<T> root;
         public List<T> TreeList;
+        public List<string> CartList;
         public List<T> SearchTree;
         public List<T> CompaniesTree;
         public List<string> Decoded; //dpi decodificados
@@ -22,6 +23,7 @@ namespace Classlibrary
         {
             root = null;
             TreeList = new List<T>();
+            CartList = new List<string>();
             SearchTree = new List<T>();
             CompaniesTree = new List<T>();
             Encoded = new List<string>();
@@ -172,7 +174,7 @@ namespace Classlibrary
                     actual.LeftNode = DeleteAVL(actual.LeftNode, delegate1, temp.value);
                 }
             }
-            //Si solo tiene un Node
+            //Si solo tiene un Nodo
             if (actual == null)
             {
                 return actual;
@@ -303,6 +305,7 @@ namespace Classlibrary
             return actual;
         }
 
+        //Search implementado para una llave primaria
         public void Search(Node<T> SearchNode, Delegate delegate1)
         {
             SearchTree.Clear();
@@ -319,6 +322,7 @@ namespace Classlibrary
             }
         }
 
+        //Search de recorrido de todo el árbol
         public Node<T> ReSearch(Node<T> aux, Delegate delegate1, Node<T> Search)
         {
             Node<T> Output = null;

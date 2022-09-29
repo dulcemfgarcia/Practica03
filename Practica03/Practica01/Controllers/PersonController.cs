@@ -23,8 +23,6 @@ namespace Practica01.Controllers
     {
         public delegate Person Edition(Person person1, Person person2);
         public delegate int dataEncode(Person person1, string company);
-
-        Huffman huffmanT = new Huffman();
         public IActionResult Index()
         {
             return View(Singleton.Instance.AVLnames);
@@ -55,7 +53,7 @@ namespace Practica01.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult LeerArchivo()
         {
-            string path = @"C:\Users\nossu\Desktop\OR\inputfile.csv";
+            string path = @"C:\Users\nossu\Desktop\input2.csv";
             //System.IO.StreamReader doc = new System.IO.StreamReader(path);
             string line = System.IO.File.ReadAllText(path);
             foreach(string row in line.Split('\n'))
@@ -93,38 +91,6 @@ namespace Practica01.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
-        public IActionResult Search()
-        {
-            return View(Singleton.Instance.AVLnames);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Search(string dpi)
-        {
-            try
-            {
-                if (dpi == null)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    Person NewPerson = new Person();
-                    NewPerson.name = dpi;
-                    Node<Person> newNode = new Node<Person>();
-                    newNode.value = NewPerson;
-                    Singleton.Instance.AVLnames.Search(newNode, NewPerson.dpiComparer);
-                    return RedirectToAction(nameof(Search));
-                }
-            }
-            catch
-            {
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
         public ActionResult Delete(string Persona)
         {
             Person nuevaPersona = new Person();
@@ -135,35 +101,42 @@ namespace Practica01.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        //Método para la vista de  la búsqueda por dpi
+        public IActionResult Search()
+        {
+            return View(Singleton.Instance.AVLnames);
+        }
+
+        //Método set para la búsqueda del dpi
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EncontrarDPICodificado(string encodeData)
+        public ActionResult Search(string Recluta)
         {
-            Singleton.Instance.AVLnames.Encoded.Clear();
+            Singleton.Instance.AVLnames.CartList.Clear();
             try
             {
-                dataEncode validate = Person.dataEncode;
-                if (encodeData == null)
+                if (Recluta == null)
                 {
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    Singleton.Instance.AVLnames.InOrder2(validate, encodeData);
-                    for(int i = 0; i < Singleton.Instance.AVLnames.CompaniesTree.Count; i++)
+                    Person NewPerson = new Person();
+                    NewPerson.dpi = Recluta;
+                    Node<Person> newNode = new Node<Person>();
+                    newNode.value = NewPerson;
+                    Singleton.Instance.AVLnames.Search(newNode, NewPerson.dpiComparer);
+
+                    DirectoryInfo di = new DirectoryInfo(@"C:\Users\nossu\Desktop\inputs");
+                    FileInfo[] files = di.GetFiles("*.txt");
+                    foreach (FileInfo file in files)
                     {
-                        string final = "";
-                        string concatenado = encodeData+""+Singleton.Instance.AVLnames.CompaniesTree[i].dpi;
-                        huffmanT.Build(concatenado);
-                        BitArray encoded = huffmanT.Encode(concatenado);
-                        foreach(bool bit in encoded)
+                        if (file.Name.Contains(Recluta))
                         {
-                            final = final+""+((bit ? 1 : 0) + "");
-                        }
-                        Singleton.Instance.AVLnames.Encoded.Add(final);
-                        //Singleton.Instance.AVLnames.CompaniesTree[i].encode[i] = final;
+                            Singleton.Instance.AVLnames.CartList.Add(file.Name);
+                        }  
                     }
-                    return RedirectToAction(nameof(Encodeview));
+                    return RedirectToAction(nameof(Search));
                 }
             }
             catch
@@ -174,35 +147,33 @@ namespace Practica01.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EncontrarDPIDecodificado(string decodeData)
+        public ActionResult Encode(string Recruit)
         {
-            Singleton.Instance.AVLnames.Encoded.Clear();
-            Singleton.Instance.AVLnames.Decoded.Clear();
+            Singleton.Instance.AVLnames.CartList.Clear();
             try
             {
-                dataEncode validate = Person.dataEncode;
-                if (decodeData == null)
+                if (Recruit == null)
                 {
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    Singleton.Instance.AVLnames.InOrder2(validate, decodeData);
-                    for (int i = 0; i < Singleton.Instance.AVLnames.CompaniesTree.Count; i++)
+                    Person NewPerson = new Person();
+                    NewPerson.dpi = Recruit;
+                    Node<Person> newNode = new Node<Person>();
+                    newNode.value = NewPerson;
+                    Singleton.Instance.AVLnames.Search(newNode, NewPerson.dpiComparer);
+
+                    DirectoryInfo di = new DirectoryInfo(@"C:\Users\nossu\Desktop\inputs");
+                    FileInfo[] files = di.GetFiles("*.txt");
+                    foreach (FileInfo file in files)
                     {
-                        string final = "";
-                        string concatenado = decodeData + "" + Singleton.Instance.AVLnames.CompaniesTree[i].dpi;
-                        huffmanT.Build(concatenado);
-                        BitArray encoded = huffmanT.Encode(concatenado);
-                        foreach (bool bit in encoded)
+                        if (file.Name.Contains(Recruit))
                         {
-                            final = final + "" + ((bit ? 1 : 0) + "");
+                            Singleton.Instance.AVLnames.CartList.Add(file.Name);
                         }
-                        Singleton.Instance.AVLnames.Encoded.Add(final);
-                        string decoded = huffmanT.Decode(encoded);
-                        Singleton.Instance.AVLnames.Decoded.Add(decoded);
                     }
-                    return RedirectToAction(nameof(Decodeview));
+                    return RedirectToAction(nameof(Search));
                 }
             }
             catch

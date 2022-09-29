@@ -5,6 +5,18 @@
     ViewData["Title"] = "Index";
 }
 
+<h4>¿Desea visualizar las cartas de recomendación de algún recluta?</h4>
+<h5>Ingrese un DPI</h5>
+<form asp-action="Search" method="post">
+    <div class="input-group input-group-lg">
+        <input type="type" name="Recluta" value="" />
+        <button class="btn btn-outline-info pe-auto">Search</button>
+    </div>
+</form>
+
+
+<h1>Reclutas</h1>
+
 @if (Model.TreeList.Count != 0)
 {
 
@@ -13,6 +25,9 @@
             <tr>
                 <th>
                     Name
+                </th>
+                <th>
+                    Dpi
                 </th>
                 <th>
                     Companies
@@ -30,10 +45,13 @@
             @foreach (var item in Model.TreeList)
             {
             <tr>
-                <td name="name">
+                <td>
                     @Html.DisplayFor(modelItem => item.name)
                 </td>
-                <td name="dpi">
+                <td>
+                    @Html.DisplayFor(modelItem => item.dpi)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.companies)
                 </td>
                 <td>
