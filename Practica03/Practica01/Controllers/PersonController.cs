@@ -1,26 +1,17 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
+﻿using Classlibrary;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Practica01.Models;
 using Practica01.Models.Data;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Dynamic;
-using Classlibrary;
-using Newtonsoft.Json;
-using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Practica01.Controllers
 {
 
     public class PersonController : Controller
     {
+
         public delegate Person Edition(Person person1, Person person2);
         public delegate int dataEncode(Person person1, string company);
         public IActionResult Index()
@@ -56,9 +47,9 @@ namespace Practica01.Controllers
             string path = @"C:\Users\nossu\Desktop\input2.csv";
             //System.IO.StreamReader doc = new System.IO.StreamReader(path);
             string line = System.IO.File.ReadAllText(path);
-            foreach(string row in line.Split('\n'))
+            foreach (string row in line.Split('\n'))
             {
-                if(!string.IsNullOrEmpty(row))
+                if (!string.IsNullOrEmpty(row))
                 {
                     string[] data = row.Split(';');
                     Person person = JsonConvert.DeserializeObject<Person>(data[1]);
@@ -72,9 +63,9 @@ namespace Practica01.Controllers
                         newPerson.companies = person.companies;
                         Singleton.Instance.AVLnames.Insert(newPerson, newPerson.dpiComparer);
                     }
-                    else if(data[0] == "PATCH")
+                    else if (data[0] == "PATCH")
                     {
-                        
+
                         Edition patch = Person.PatchData;
                         Person newPerson = new Person();
                         newPerson.name = person.name;
@@ -84,7 +75,7 @@ namespace Practica01.Controllers
                         Node<Person> newNode = new Node<Person>();
                         newNode.value = newPerson;
                         Singleton.Instance.AVLnames.Search(newNode, newPerson.dpiComparer);
-                        Singleton.Instance.AVLnames.Patch(newPerson,newNode, newPerson.dpiComparer, patch);
+                        Singleton.Instance.AVLnames.Patch(newPerson, newNode, newPerson.dpiComparer, patch);
 
                     }
                 }
@@ -134,7 +125,7 @@ namespace Practica01.Controllers
                         if (file.Name.Contains(Recluta))
                         {
                             Singleton.Instance.AVLnames.CartList.Add(file.Name);
-                        }  
+                        }
                     }
                     return RedirectToAction(nameof(Search));
                 }
@@ -145,11 +136,11 @@ namespace Practica01.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Encode(string Recruit)
         {
-            Singleton.Instance.AVLnames.CartList.Clear();
+            string path = @"C:\Users\nossu\Desktop\inputs\" + Recruit;
+            string encodedfile = @"C:\Users\nossu\Desktop\compressed\compressed-" + Recruit;
+            string decodedfile = @"C:\Users\nossu\Desktop\decoded\decoded-" + Recruit;
             try
             {
                 if (Recruit == null)
@@ -158,21 +149,41 @@ namespace Practica01.Controllers
                 }
                 else
                 {
-                    Person NewPerson = new Person();
-                    NewPerson.dpi = Recruit;
-                    Node<Person> newNode = new Node<Person>();
-                    newNode.value = NewPerson;
-                    Singleton.Instance.AVLnames.Search(newNode, NewPerson.dpiComparer);
+                    Encoder encoder = new Encoder();
+                    Decoder decoder = new Decoder();
+                    string text = System.IO.File.ReadAllText(path, System.Text.ASCIIEncoding.Default);
+                    List<int> compressed = encoder.Compress(text);
+                    string compressedMessage = string.Join("", compressed);
+                    System.IO.File.WriteAllText(encodedfile, compressedMessage);
+                    return RedirectToAction(nameof(Search));
+                }
+            }
+            catch
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
 
-                    DirectoryInfo di = new DirectoryInfo(@"C:\Users\nossu\Desktop\inputs");
-                    FileInfo[] files = di.GetFiles("*.txt");
-                    foreach (FileInfo file in files)
-                    {
-                        if (file.Name.Contains(Recruit))
-                        {
-                            Singleton.Instance.AVLnames.CartList.Add(file.Name);
-                        }
-                    }
+        public ActionResult Decode(string Recruit)
+        {
+            string path = @"C:\Users\nossu\Desktop\inputs\" + Recruit;
+            string encodedfile = @"C:\Users\nossu\Desktop\compressed\compressed-"+Recruit;
+            string decodedfile = @"C:\Users\nossu\Desktop\decoded\decoded-"+Recruit;
+            try
+            {
+                if (Recruit == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    Encoder encoder = new Encoder();
+                    Decoder decoder = new Decoder();
+                    string text = System.IO.File.ReadAllText(path, System.Text.ASCIIEncoding.Default);
+                    List<int> compressed = encoder.Compress(text);
+                    string compressedMessage = string.Join("", compressed);
+                    string decompressed = decoder.Decompress(compressed);
+                    System.IO.File.WriteAllText(decodedfile, decompressed);
                     return RedirectToAction(nameof(Search));
                 }
             }
